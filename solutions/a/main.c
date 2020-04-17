@@ -64,6 +64,6 @@ int main(void)
     }
   }
 
-  printf("Net amount is %.2f", total);
+  printf("Net amount is %.2f\n", total);
   return 0;
 }
