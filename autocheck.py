@@ -58,35 +58,38 @@ def lenformat(s):
     return s1
 
 def prep_tests():
-    global testdir, test_in, test_out, home
-    test_in = {}
-    test_out = {}
-    os.chdir(testdir)
+    global testdir, test_in, test_out, home, run, summary
+    if run:
+        test_in = {}
+        test_out = {}
+        os.chdir(testdir)
 
-    for testfile in os.listdir('.'):
-        fname = testfile.split('.')[0]
-        fext = testfile.split('.')[1]
-        file = open(testfile,'r')
+        for testfile in os.listdir('.'):
+            fname = testfile.split('.')[0]
+            fext = testfile.split('.')[1]
+            file = open(testfile,'r')
 
-        global flen
-        flen = max(flen, len(fname))
+            global flen
+            flen = max(flen, len(fname))
 
-        if fext == 'in':
-            test_in[fname] = file.read().strip()
-        elif fext == 'out':
-            test_out[fname] = file.read().strip()
+            if fext == 'in':
+                test_in[fname] = file.read().strip()
+            elif fext == 'out':
+                test_out[fname] = file.read().strip()
 
-    os.chdir(home)
-    test_in = collections.OrderedDict(sorted(test_in.items()))
+        os.chdir(home)
+        test_in = collections.OrderedDict(sorted(test_in.items()))
 
-    for key in test_in.keys():
-        if not summary:
-            print 'LOADING', lenformat(key), '-', repr(test_in[key]), ':', repr(test_out[key])
-        global tpass
-        tpass += 1
+        for key in test_in.keys():
+            if not summary:
+                print 'LOADING', lenformat(key), '-', repr(test_in[key]), ':', repr(test_out[key])
+            global tpass
+            tpass += 1
 
-    if summary:
-        print tpass, 'tests loaded successfully'
+        if summary:
+            print tpass, 'tests loaded successfully'
+    else:
+        print 'Runtime tests not loaded for --no-run'
 
 def compare(test, expected, result):
     matchlist = re.findall('\d+\.\d{2}', result)
@@ -123,13 +126,18 @@ def compile_file(filepath, studentid):
     r = call(['gcc', filepath], stdout=f, stderr=f)
     f.close()
     if os.path.exists('a.out'):
-        global csuccess, marks, cmarks, summary
+        global csuccess, marks, cmarks, summary, run
         marks += cmarks
         csuccess += 1
+        os.remove('compile.out')
+
         if not summary:
             print '    ', blue('Compile'), green('OK')
-        os.remove('compile.out')
-        run_file(filepath, studentid)
+        elif not run:
+            print blue('Compile'), green('OK')
+
+        if run:
+            run_file(filepath, studentid)
     else:
         global cfail
         cfail += 1
@@ -138,7 +146,7 @@ def compile_file(filepath, studentid):
         print blue('Compile'), red('FAIL')
 
 def process_file(filepath):
-    global marks, summary
+    global marks, summary, run
     marks = 0
     a = filepath.split('/')
     studentid = a[len(a)-2]
@@ -148,10 +156,11 @@ def process_file(filepath):
         print orange(studentid)
     compile_file(filepath, studentid)
     if summary:
-        if marks!=0:
-            print orange(str(marks))
+        if run and marks!=0:
+            print blue('Compile'), green('OK') + ' ' + orange('marks ='), bold(green(str(marks)))
     else:
-        print '    ', bold(blue('marks = {0}'.format(marks)))
+        if marks!=0:
+            print '     marks =', bold(green(str(marks)))
 
 def process(cur):
     global ext, count
@@ -169,7 +178,7 @@ def process(cur):
         os.chdir('..')
 
 def parse_args():
-    global ext, stdir, testdir, colors, summary
+    global ext, stdir, testdir, colors, summary, run
 
     for arg in sys.argv:
         if arg.startswith('--dir'):
@@ -183,10 +192,13 @@ def parse_args():
             tmarks = arg.split('=')[1].split(',')[1]
         elif arg.startswith('--summary'):
             summary = True
+        elif arg.startswith('--no-run'):
+            run = False
+            summary = True
 
 def init():
     global csuccess, cfail, ext, stdir, testdir, count, flen, colors, cpass
-    global tpass, npass, home, cmarks, tmarks, summary
+    global tpass, npass, home, cmarks, tmarks, summary, run
     home = os.getcwd()  # current working directory
     csuccess = 0        # how many successful compilations
     cfail = 0           # how many failed compilations
@@ -201,6 +213,7 @@ def init():
     cmarks = 40         # marks for compilation
     tmarks = 5          # marks per test
     summary = False     # show summaries only
+    run = True          # run after compiling
 
 def print_loading_tests():
     print '\n----------- Loading Tests -------------\n'
@@ -213,7 +226,10 @@ def print_results():
     print 'TOTAL: {0}'.format(count)
     print 'COMPILED: {0}'.format(csuccess)
     print 'COMPILE FAILED: {0}'.format(cfail)
-    print 'ALL TESTS PASSED: {0}'.format(npass)
+
+    global run
+    if run:
+        print 'ALL TESTS PASSED: {0}'.format(npass)
     print ''
 
 def main():
