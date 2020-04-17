@@ -1,3 +1,9 @@
+# renames the student submission folders to the following format
+# submissions/studentid/source.c
+
+# usage: python list-all.py <directory>
+# example: python list-all.py submissions
+
 import os
 import sys
 

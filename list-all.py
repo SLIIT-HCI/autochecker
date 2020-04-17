@@ -1,3 +1,9 @@
+# lists all the source files in the folder, to find inconsistencies in naming
+# recommend running before autochecker
+
+# usage: python list-all.py <directory>
+# example: python list-all.py submissions
+
 import os
 import sys
 

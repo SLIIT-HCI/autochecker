@@ -1,8 +1,19 @@
 #!/usr/bin/env python
 
+# autochecker
+# tailored to C source files in the format submissions/studentid/studentid.c
+# tests should be provided as tests/testfile.in, tests/testfile.out
+
+# for each submission, compiles and runs the source against a set of test inputs
+# compares the program output to expected output and calculates marks
+# marks are added for compilation and correctly passing each test
+
 # usage: ./autocheck.py --dir=<submission-dir> --test=<tests-dir>
 #             --marks=<marks for compilation>,<marks per testcase> [--colors] [--no-run] [--summary]
 # example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --colors --summary --no-run
+
+# TODO: seperate code into modules
+# TODO: seperate UI from logic - i.e. first process the files then decide printing based on flags
 
 import os
 import sys
