@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# usage: ./autocheck.py --dir=<submission-dir> --test=<tests-dir> --marks=<marks for compilation>,<marks per testcase> [--colors] [--no-run]
+# example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --colors --summary --no-run
+
 import os
 import sys
 import re
