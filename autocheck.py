@@ -9,8 +9,8 @@
 # marks are added for compilation and correctly passing each test
 
 # usage: ./autocheck.py --dir=<submission-dir> --test=<tests-dir>
-#             --marks=<marks for compilation>,<marks per testcase> [--colors] [--no-run] [--summary]
-# example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --colors --summary --no-run
+#             --marks=<marks for compilation>,<marks per testcase> [--no-color] [--no-run] [--summary]
+# example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --summary
 
 # TODO: seperate code into modules
 # TODO: seperate UI from logic - i.e. first process the files then decide printing based on flags
@@ -200,8 +200,8 @@ def parse_args():
             stdir = arg.split('=')[1]
         elif arg.startswith('--test'):
             testdir = arg.split('=')[1]
-        elif arg.startswith('--colors'):
-            colors = True
+        elif arg.startswith('--no-color'):
+            colors = False
         elif arg.startswith('--marks'):
             cmarks = arg.split('=')[1].split(',')[0]
             tmarks = arg.split('=')[1].split(',')[1]
@@ -224,7 +224,7 @@ def init():
     testdir = '.'       # test directory
     stdir = '.'         # submission directory
     flen = 0            # maximum length of test name - for formatting purposes
-    colors = False      # if colors are on/off - formatting only
+    colors = True       # if colors are on/off - formatting only
     cmarks = 40         # marks for compilation
     tmarks = 5          # marks per test
     summary = False     # show summaries only
