@@ -123,7 +123,7 @@ def compare(test, expected, result):
 
     if len(matchlist)==0:
         if not summary:
-            print '    ', stest, '-', red('FAIL'), ' : unexpected format'
+            print '    ', stest, '-', red('FAIL'), ': invalid output'
     else:
         all_invalid = False
         result = matchlist[-1]
@@ -132,7 +132,7 @@ def compare(test, expected, result):
             marks += tmarks
             cpass += 1
             if not summary:
-                print '    ', stest, '-', green('PASS')
+                print '    ', stest, '-', orange('PASS')
         else:
             if not summary:
                 print '    ', stest, '-', red('FAIL'), ': expected {0} returned {1}'.format(expected, result)
@@ -177,9 +177,9 @@ def compile_file(filepath, studentid):
         os.remove('compile.out')
 
         if not summary:
-            print '    ', blue('Compile'), green('OK')
+            print '    ', green('Compile OK')
         elif not run:
-            print blue('Compile'), green('OK')
+            print orange('Compile OK')
 
         if run:
             all_timeout = True
@@ -194,32 +194,32 @@ def compile_file(filepath, studentid):
         cfail += 1
         if not summary:
             print '    ',
-        print blue('Compile'), red('FAIL')
+        print red('Compile FAIL')
 
 def process_file(filepath):
     global marks, summary, run
     marks = 0
     a = filepath.split('/')
     studentid = a[len(a)-2]
+
     if summary:
         print studentid,
     else:
-        print orange(studentid)
+        print studentid
 
     compile_file(filepath, studentid)
 
     if summary:
         if run and marks!=0:
-            print blue('Compile'), green('OK'),
             if all_timeout:
-                print '- all tests timed out'
+                print orange('Compile OK - all tests timed out')
             elif all_invalid:
-                print '- all outputs in unexpected format'
+                print orange('Compile OK - all outputs in unexpected format')
             else:
-                print orange('marks ='), bold(green(str(marks)))
+                print green('Compile OK - marks ='), bold(green(str(marks)))
     else:
         if marks!=0:
-            print '     marks =', bold(green(str(marks)))
+            print green('    - marks ='), bold(green(str(marks)))
 
 def process(cur):
     global ext, count
@@ -281,7 +281,7 @@ def init():
     timeout = 0.01      # timeout 10 milliseconds
 
 def print_loading_tests():
-    print '\n----------- Loading Tests -------------\n'
+    print '\n----------- Loading Tests -----------------\n'
 
 def print_start_message():
     print '\n----------- Starting Autochecker -------------\n'
@@ -305,7 +305,9 @@ def print_results():
         print 'EVALUATED:         {0:>4} ( {1:>2.2f} % )'.format(ceval, p(ceval))
     else:
         print 'COMPILE SUCESSFUL: {0:>4} ( {1:>2.2f} % )'.format(csuccess, p(csuccess))
-    print ''
+
+def print_endof_results():
+    print '\n----------- End of Results -----------------\n'
 
 def main():
     init()
@@ -315,6 +317,7 @@ def main():
     print_start_message()
     process(stdir)
     print_results()
+    print_endof_results()
 
 if __name__ == "__main__":
     main()
