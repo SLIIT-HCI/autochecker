@@ -139,8 +139,8 @@ def run_file(filepath, studentid):
     global cpass, npass, tpass, timeout, timed_out
     cpass = 0
     for key in test_in.keys():
-        p = Popen(['./a.out'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         timed_out = False
+        p = Popen(['./a.out'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
 
         def timeout_process():
             global timed_out
@@ -222,7 +222,7 @@ def process(cur):
         os.chdir('..')
 
 def parse_args():
-    global ext, stdir, testdir, colors, summary, run
+    global ext, stdir, testdir, colors, summary, run, timeout
 
     for arg in sys.argv:
         if arg.startswith('--dir'):
@@ -240,7 +240,7 @@ def parse_args():
             run = False
             summary = True
         elif (arg.startswith('--timeout')):
-            timeout = arg.split('=')[1]
+            timeout = float(arg.split('=')[1])
 
 def init():
     global csuccess, cfail, ext, stdir, testdir, count, flen, colors, cpass
@@ -260,7 +260,7 @@ def init():
     tmarks = 5          # marks per test
     summary = False     # show summaries only
     run = True          # run after compiling
-    timeout = 0.001     # timeout 1 millisecond
+    timeout = 0.01      # timeout 10 milliseconds
 
 def print_loading_tests():
     print '\n----------- Loading Tests -------------\n'
