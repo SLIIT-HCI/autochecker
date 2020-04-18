@@ -19,10 +19,11 @@
 
 # example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --no-color --no-run --summary --timeout=0.01
 
-# TODO: seperate code into modules
+# TODO: seperate code into modules, and cleanup
 # TODO: seperate UI from logic - i.e. first process the files then decide printing based on flags
 # TODO: add exception handling
 
+from __future__ import division
 import os
 import sys
 import re
@@ -118,12 +119,13 @@ def prep_tests():
 def compare(test, expected, result):
     matchlist = re.findall('\d+\.\d{2}', result)
     stest = lenformat(test)
-    global summary
+    global summary, all_invalid
 
     if len(matchlist)==0:
         if not summary:
             print '    ', stest, '-', red('FAIL'), ' : unexpected format'
     else:
+        all_invalid = False
         result = matchlist[-1]
         if result == expected:
             global cpass, marks, tmarks
@@ -136,7 +138,7 @@ def compare(test, expected, result):
                 print '    ', stest, '-', red('FAIL'), ': expected {0} returned {1}'.format(expected, result)
 
 def run_file(filepath, studentid):
-    global cpass, npass, tpass, timeout, timed_out
+    global cpass, npass, tpass, timeout, timed_out, all_timeout
     cpass = 0
     for key in test_in.keys():
         timed_out = False
@@ -158,6 +160,7 @@ def run_file(filepath, studentid):
             if not summary:
                 print '    ', lenformat(key), '-', red('FAIL'), ': timed out'
         else:
+            all_timeout = False
             compare(key, test_out[key], result)
 
     if cpass == tpass:
@@ -168,7 +171,7 @@ def compile_file(filepath, studentid):
     r = call(['gcc', filepath], stdout=f, stderr=f)
     f.close()
     if os.path.exists('a.out'):
-        global csuccess, marks, cmarks, summary, run
+        global csuccess, marks, cmarks, summary, run, all_invalid, all_timeout, ctimeout, cinvalid
         marks += cmarks
         csuccess += 1
         os.remove('compile.out')
@@ -179,7 +182,13 @@ def compile_file(filepath, studentid):
             print blue('Compile'), green('OK')
 
         if run:
+            all_timeout = True
+            all_invalid = True
             run_file(filepath, studentid)
+            if all_invalid:
+                cinvalid += 1
+            if all_timeout:
+                ctimeout += 1
     else:
         global cfail
         cfail += 1
@@ -201,7 +210,13 @@ def process_file(filepath):
 
     if summary:
         if run and marks!=0:
-            print blue('Compile'), green('OK'), orange('marks ='), bold(green(str(marks)))
+            print blue('Compile'), green('OK'),
+            if all_timeout:
+                print '- all tests timed out'
+            elif all_invalid:
+                print '- all outputs in unexpected format'
+            else:
+                print orange('marks ='), bold(green(str(marks)))
     else:
         if marks!=0:
             print '     marks =', bold(green(str(marks)))
@@ -245,8 +260,11 @@ def parse_args():
 def init():
     global csuccess, cfail, ext, stdir, testdir, count, flen, colors, cpass
     global tpass, npass, home, cmarks, tmarks, summary, run, timeout
+    global ctimeout, cinvalid
     home = os.getcwd()  # current working directory
     csuccess = 0        # how many successful compilations
+    ctimeout = 0        # how many submissions timed out
+    cinvalid = 0        # how many submissions had invalid output format
     cfail = 0           # how many failed compilations
     count = 0           # total number of submissions
     cpass = 0           # how many test cases passed
@@ -268,15 +286,25 @@ def print_loading_tests():
 def print_start_message():
     print '\n----------- Starting Autochecker -------------\n'
 
+def p(c):
+    global count
+    return c * 100 / count
+
 def print_results():
     print '\n----------- Autochecking Complete  ------------\n'
-    print 'TOTAL: {0}'.format(count)
-    print 'COMPILED: {0}'.format(csuccess)
-    print 'COMPILE FAILED: {0}'.format(cfail)
+    print 'TOTAL SUBMISSIONS: {0:>4}'.format(count)
+    print ''
+    print 'COMPILE FAILED:    {0:>4} ( {1:>2.2f} % )'.format(cfail, p(cfail))
 
-    global run
+    global run, cinvalid, ctimeout
     if run:
-        print 'ALL TESTS PASSED: {0}'.format(npass)
+        ceval = csuccess - ctimeout - cinvalid
+        print 'TIMED OUT:         {0:>4} ( {1:>2.2f} % )'.format(ctimeout, p(ctimeout))
+        print 'INVALID OUTPUT:    {0:>4} ( {1:>2.2f} % )'.format(cinvalid, p(cinvalid))
+        print ''
+        print 'EVALUATED:         {0:>4} ( {1:>2.2f} % )'.format(ceval, p(ceval))
+    else:
+        print 'COMPILE SUCESSFUL: {0:>4} ( {1:>2.2f} % )'.format(csuccess, p(csuccess))
     print ''
 
 def main():
