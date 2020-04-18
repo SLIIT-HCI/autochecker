@@ -22,6 +22,7 @@
 # TODO: seperate code into modules, and cleanup
 # TODO: seperate UI from logic - i.e. first process the files then decide printing based on flags
 # TODO: add exception handling
+# TODO: add timing info - how long did it take per submission
 
 from __future__ import division
 import os
@@ -30,6 +31,7 @@ import re
 import collections
 from subprocess import Popen, call, PIPE, STDOUT
 from threading import Timer
+from time import time
 
 class bcolors:
     HEADER = '\033[95m'
@@ -259,7 +261,7 @@ def parse_args():
 
 def init():
     global csuccess, cfail, ext, stdir, testdir, count, flen, colors, cpass
-    global tpass, npass, home, cmarks, tmarks, summary, run, timeout
+    global tpass, npass, home, cmarks, tmarks, summary, run, timeout, starttime
     global ctimeout, cinvalid
     home = os.getcwd()  # current working directory
     csuccess = 0        # how many successful compilations
@@ -279,6 +281,7 @@ def init():
     summary = False     # show summaries only
     run = True          # run after compiling
     timeout = 0.01      # timeout 10 milliseconds
+    starttime = time()  # program start time
 
 def print_loading_tests():
     print '\n----------- Loading Tests -----------------\n'
@@ -296,7 +299,7 @@ def print_results():
     print ''
     print 'COMPILE FAILED:    {0:>4} ( {1:>2.0f} % )'.format(cfail, p(cfail))
 
-    global run, cinvalid, ctimeout
+    global run, cinvalid, ctimeout, starttime
     if run:
         ceval = csuccess - ctimeout - cinvalid
         print 'TIMED OUT:         {0:>4} ( {1:>2.0f} % )'.format(ctimeout, p(ctimeout))
@@ -305,6 +308,8 @@ def print_results():
         print 'EVALUATED:         {0:>4} ( {1:>2.0f} % )'.format(ceval, p(ceval))
     else:
         print 'COMPILE SUCESSFUL: {0:>4} ( {1:>2.0f} % )'.format(csuccess, p(csuccess))
+
+    print '\nExecuted in {0:.4f} seconds'.format(time() - starttime)
 
 def print_endof_results():
     print '\n----------- End of Results -----------------\n'
