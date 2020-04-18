@@ -8,18 +8,27 @@
 # compares the program output to expected output and calculates marks
 # marks are added for compilation and correctly passing each test
 
-# usage: ./autocheck.py --dir=<submission-dir> --test=<tests-dir>
-#             --marks=<marks for compilation>,<marks per testcase> [--no-color] [--no-run] [--summary]
-# example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --summary
+# usage: ./autocheck.py
+#               --dir=<submission-dir>  # where the student submission folders are located
+#               --test=<tests-dir>      # where the tests are located
+#               --marks=<M1>,<M2>       # marks for compilation, marks for running
+#               --no-color              # toggle colours in the output
+#               --no-run                # if this is set, only compiles, does not run tests
+#               --summary               # does not show individual test outcomes
+#               --timeout=seconds       # time limit on each test case - to avoid infinite loops
+
+# example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --no-color --no-run --summary --timeout=0.01
 
 # TODO: seperate code into modules
 # TODO: seperate UI from logic - i.e. first process the files then decide printing based on flags
+# TODO: add exception handling
 
 import os
 import sys
 import re
 import collections
-from subprocess import Popen, call, PIPE
+from subprocess import Popen, call, PIPE, STDOUT
+from threading import Timer
 
 class bcolors:
     HEADER = '\033[95m'
@@ -127,12 +136,30 @@ def compare(test, expected, result):
                 print '    ', stest, '-', red('FAIL'), ': expected {0} returned {1}'.format(expected, result)
 
 def run_file(filepath, studentid):
-    global cpass, npass, tpass
+    global cpass, npass, tpass, timeout, timed_out
     cpass = 0
     for key in test_in.keys():
-        p = Popen(['./a.out'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        result = p.communicate(test_in[key])[0]
-        compare(key, test_out[key], result)
+        p = Popen(['./a.out'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+        timed_out = False
+
+        def timeout_process():
+            global timed_out
+            timed_out = True
+            p.kill()
+
+        timer = Timer(timeout, timeout_process)
+        try:
+            timer.start()
+            result = p.communicate(test_in[key])[0]
+        finally:
+            timer.cancel()
+
+        if timed_out:
+            if not summary:
+                print '    ', lenformat(key), '-', red('FAIL'), ': timed out'
+        else:
+            compare(key, test_out[key], result)
+
     if cpass == tpass:
         npass += 1
 
@@ -169,10 +196,12 @@ def process_file(filepath):
         print studentid,
     else:
         print orange(studentid)
+
     compile_file(filepath, studentid)
+
     if summary:
         if run and marks!=0:
-            print blue('Compile'), green('OK') + ' ' + orange('marks ='), bold(green(str(marks)))
+            print blue('Compile'), green('OK'), orange('marks ='), bold(green(str(marks)))
     else:
         if marks!=0:
             print '     marks =', bold(green(str(marks)))
@@ -210,10 +239,12 @@ def parse_args():
         elif arg.startswith('--no-run'):
             run = False
             summary = True
+        elif (arg.startswith('--timeout')):
+            timeout = arg.split('=')[1]
 
 def init():
     global csuccess, cfail, ext, stdir, testdir, count, flen, colors, cpass
-    global tpass, npass, home, cmarks, tmarks, summary, run
+    global tpass, npass, home, cmarks, tmarks, summary, run, timeout
     home = os.getcwd()  # current working directory
     csuccess = 0        # how many successful compilations
     cfail = 0           # how many failed compilations
@@ -229,6 +260,7 @@ def init():
     tmarks = 5          # marks per test
     summary = False     # show summaries only
     run = True          # run after compiling
+    timeout = 0.001     # timeout 1 millisecond
 
 def print_loading_tests():
     print '\n----------- Loading Tests -------------\n'
