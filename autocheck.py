@@ -294,17 +294,17 @@ def print_results():
     print '\n----------- Autochecking Complete  ------------\n'
     print 'TOTAL SUBMISSIONS: {0:>4}'.format(count)
     print ''
-    print 'COMPILE FAILED:    {0:>4} ( {1:>2.2f} % )'.format(cfail, p(cfail))
+    print 'COMPILE FAILED:    {0:>4} ( {1:>2.0f} % )'.format(cfail, p(cfail))
 
     global run, cinvalid, ctimeout
     if run:
         ceval = csuccess - ctimeout - cinvalid
-        print 'TIMED OUT:         {0:>4} ( {1:>2.2f} % )'.format(ctimeout, p(ctimeout))
-        print 'INVALID OUTPUT:    {0:>4} ( {1:>2.2f} % )'.format(cinvalid, p(cinvalid))
+        print 'TIMED OUT:         {0:>4} ( {1:>2.0f} % )'.format(ctimeout, p(ctimeout))
+        print 'INVALID OUTPUT:    {0:>4} ( {1:>2.0f} % )'.format(cinvalid, p(cinvalid))
         print ''
-        print 'EVALUATED:         {0:>4} ( {1:>2.2f} % )'.format(ceval, p(ceval))
+        print 'EVALUATED:         {0:>4} ( {1:>2.0f} % )'.format(ceval, p(ceval))
     else:
-        print 'COMPILE SUCESSFUL: {0:>4} ( {1:>2.2f} % )'.format(csuccess, p(csuccess))
+        print 'COMPILE SUCESSFUL: {0:>4} ( {1:>2.0f} % )'.format(csuccess, p(csuccess))
 
 def print_endof_results():
     print '\n----------- End of Results -----------------\n'
