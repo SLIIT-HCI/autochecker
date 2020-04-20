@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# inspired by: https://github.com/ChrisJefferson/stacscheck
+# credits to: Christopher Jefferson (PhD), Lecturer, University of St Andrews, UK
+
 # autochecker
 # tailored to C source files in the format submissions/studentid/studentid.c
 # tests should be provided as tests/testfile.in, tests/testfile.out
@@ -17,12 +20,11 @@
 #               --summary               # does not show individual test outcomes
 #               --timeout=seconds       # time limit on each test case - to avoid infinite loops
 
-# example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --no-color --no-run --summary --timeout=0.01
+# example: ./autocheck.py --dir=submissions --test=tests --marks=40,5 --no-color --no-run --summary --timeout=0.05
 
-# TODO: seperate code into modules, and cleanup
+# TODO: seperate code into modules and cleanup
 # TODO: seperate UI from logic - i.e. first process the files then decide printing based on flags
 # TODO: add exception handling
-# TODO: add timing info - how long did it take per submission
 
 from __future__ import division
 import os
@@ -226,7 +228,6 @@ def process_file(filepath):
 def process(cur):
     global ext, count
     if os.path.isfile(cur):
-        #if (ext==None or cur.endswith(ext)):
         if cur.endswith('.c'):
             filepath = os.path.abspath(cur)
             process_file(filepath)
@@ -280,7 +281,7 @@ def init():
     tmarks = 5          # marks per test
     summary = False     # show summaries only
     run = True          # run after compiling
-    timeout = 0.01      # timeout 10 milliseconds
+    timeout = 0.05      # timeout 50 milliseconds
     starttime = time()  # program start time
 
 def print_loading_tests():
