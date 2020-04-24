@@ -1,6 +1,5 @@
 
 # autochecker
-## Introduction
 Autochecker is a tool written for autograding programming assignments using blackbox testing. The idea is to run a set of tests (inputs, expected outputs) against each student submission and provide marks based on the results.
 
 ## Getting Started
@@ -36,9 +35,7 @@ ensure that x + y * no_testcases = 100
 * `--no-run` only compiles the code and does not run the test cases
 * `--timeout=seconds`provide (in seconds) the time limit per test case 
 
-e.g.
-``cd ~/autocheck``
-``./autocheck.py --tests=tests --submissions=submissions``
+e.g. `cd ~/autocheck | ./autocheck.py --tests=tests --submissions=submissions`
 
 ## Limitations
 * Student submissions with the following outcomes must be checked by a human marker
