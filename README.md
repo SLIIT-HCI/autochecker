@@ -11,8 +11,8 @@ autochecker is a tool written for autograding programming assignments using blac
 * Copy the tests into a folder e.g. `~/autocheck/tests`
 
 	> Some tests have been provided that could be edited for requirement. See section below for test guidelines
-	
-* Copy your student submissions into a folder e.g. `~/autocheck/submissions` 
+
+* Copy your student submissions into a folder e.g. `~/autocheck/submissions`
 
 	> submissions should be in the format of  `<student-id>/<source-files>` e.g. `~/autocheck/submissions/IT120019180/main.c`
 
@@ -34,7 +34,7 @@ ensure that x + y * no_testcases = 100
 * `--colors` presents the output in a colourful format
 * `--summary` presents the output in a summarised form
 * `--no-run` only compiles the code and does not run the test cases
-* `--timeout=seconds`provide (in seconds) the time limit per test case 
+* `--timeout=seconds`provide (in seconds) the time limit per test case
 
 e.g. `cd ~/autocheck | ./autocheck.py --tests=tests --submissions=submissions`
 
@@ -43,19 +43,19 @@ e.g. `cd ~/autocheck | ./autocheck.py --tests=tests --submissions=submissions`
 	* Do not compile
 	* Times out - e.g. due to getting stuck in infinite loops or additional user inputs
 	* Fails all tests - e.g. due to unexpected output format
-	
-* Only supports blackbox testing - i.e. doesn't analyse source code 
+
+* Only supports blackbox testing - i.e. doesn't analyse source code
 * To be tested, programs must write the output to a file or standard output to be checked, and (optionally) take input from the standard input or files
 
 ## Best Practices
-These best practices are listed from previous experience and substantial trial and error.
+These best practices are listed from previous experience and extensive trial and error.
 
 * Prepare the programming assignment to be compatible for autochecker use
 	* Require students to adhere to a strict input/output format from stdin/out or files
 	* Provide students with a written example of the input/output format, or provide a skeleton code to get started
 	* Provide students with some sample inputs and outputs used by autochecker
 	* Vet the assignment spec, sample solution and tests before publishing to students
-	
+
 * Provide students access to autochecker with a subset of tests used for marking. Alternatively you could have separate sets of _public_ and _private_ tests for use by students and staff respectively
 
 * Encourage incremental development of solutions. I.e. At every step, encourage students to compile/run/test their code to ensure they are free of compile and runtime errors, and they comply with the provided _public tests_
