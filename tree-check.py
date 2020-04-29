@@ -12,12 +12,12 @@ def getKey(v):
     for key, value in keywords.items():
         if(v in value):
             print (key)
-           
+
 
 
 #open the solution
 def openSolution():
-    cur_path = os.path.dirname(__file__)
+    cur_path = os.getcwd()
     solution = open(cur_path+"/solutions/a/main.c", "r")
     return solution.read()
 
@@ -28,7 +28,7 @@ def cleanCode(s):
         s = s.replace(i,' ')
 
     s = s.replace("'","")
-        
+
 
     return s
 
@@ -51,12 +51,3 @@ fileText = openSolution()
 newFile = cleanCode(fileText)
 
 printTree(splitCode(newFile))
-
-
-
-
-
-
-
-
-
