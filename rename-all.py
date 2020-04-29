@@ -19,7 +19,8 @@ for sub in os.listdir('.'):
         if index != -1:
             sub_dir = sub[0:index]
             os.rename(sub, sub_dir)
-            print(sub_dir)
+            print sub_dir
+
             """
             os.chdir(sub_dir)
             if not os.path.exists('source'):
