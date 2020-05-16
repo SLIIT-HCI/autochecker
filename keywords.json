@@ -1,7 +1,0 @@
-{
-    "data-types":["void","int", "float", "char", "double", "long"],
-    "selection":["if", "else", "switch", "case", "default","break"],
-    "repetetion":["for", "while", "do","continue"],
-    "define-vars":["auto", "signed", "const", "extern", "register", "unsigned"],
-    "other":["enum","sizeof","struct","typedef","union","volatile"]
-}
