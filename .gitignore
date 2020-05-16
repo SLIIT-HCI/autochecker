@@ -1,5 +1,5 @@
 .DS_Store
 submissions/
-a.out
-compile.out
+*.out
 malabe*.docx
+cs1002/
