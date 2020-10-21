@@ -146,7 +146,8 @@ def run_file(filepath, studentid):
     cpass = 0
     for key in test_in.keys():
         timed_out = False
-        p = Popen(['./a.out'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+        #p = Popen(['./a.out'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+        p = Popen(['a.exe'], stdin=PIPE, stdout=PIPE, stderr=STDOUT)#for Windows
 
         def timeout_process():
             global timed_out
@@ -174,7 +175,8 @@ def compile_file(filepath, studentid):
     f = open('compile.out', 'w')
     r = call(['gcc', filepath], stdout=f, stderr=f)
     f.close()
-    if os.path.exists('a.out'):
+    #if os.path.exists('a.out'):
+    if os.path.exists('a.exe'):#for windows
         global csuccess, marks, cmarks, summary, run, all_invalid, all_timeout, ctimeout, cinvalid
         marks += cmarks
         csuccess += 1
@@ -315,6 +317,9 @@ def print_results():
 def print_endof_results():
     print '\n----------- End of Results -----------------\n'
 
+def returnAll():
+    return (ctimeout, cinvalid, csuccess, time() - starttime)
+
 def main():
     init()
     parse_args()
@@ -322,8 +327,11 @@ def main():
     prep_tests()
     print_start_message()
     process(stdir)
-    print_results()
+    #print_results()
+    print returnAll()
     print_endof_results()
+
+
 
 if __name__ == "__main__":
     main()
