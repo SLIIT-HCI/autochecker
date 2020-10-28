@@ -1,0 +1,65 @@
+
+----------- Loading Tests -----------------
+
+LOADING test01 - 'N 2 1 N' : '330.00'
+LOADING test02 - 'N 3 1 N' : '630.00'
+LOADING test03 - 'N 4 1 N' : '350.00'
+LOADING test04 - 'N 1 5 N' : '1800.00'
+LOADING test05 - 'N 3 5 N' : '3150.00'
+LOADING test06 - 'Y 1 3 Y 2 2 N' : '1600.80'
+LOADING test07 - 'N 2 1 Y 2 1 Y 2 1 N' : '990.00'
+LOADING test08 - 'N 1 3 Y 4 4 N' : '2480.00'
+LOADING test09 - 'Y 4 3 N' : '966.00'
+LOADING test10 - 'Y 4 1 N' : '332.50'
+LOADING test11 - 'Y 4 15 N' : '4462.50'
+LOADING test12 - 'Y 4 29 N' : '8120.00'
+
+----------- Starting Autochecker -------------
+
+D:\Projects\python\AutoChecker\autochecker\solutions\main copy.c
+test----compile.exe
+     [92mCompile OK[0m
+     test01 - [93mPASS[0m
+     test02 - [93mPASS[0m
+     test03 - [93mPASS[0m
+     test04 - [91mFAIL[0m : expected 1800.00 returned 1810.00
+     test05 - [93mPASS[0m
+     test06 - [91mFAIL[0m : expected 1600.80 returned 1606.32
+     test07 - [93mPASS[0m
+     test08 - [91mFAIL[0m : expected 2480.00 returned 2486.00
+     test09 - [93mPASS[0m
+     test10 - [93mPASS[0m
+     test11 - [93mPASS[0m
+     test12 - [93mPASS[0m
+[92m    - marks =[0m [1m[92m85[0m[0m
+D:\Projects\python\AutoChecker\autochecker\solutions\main.c
+test----compile.exe
+     [92mCompile OK[0m
+     test01 - [93mPASS[0m
+     test02 - [93mPASS[0m
+     test03 - [93mPASS[0m
+     test04 - [93mPASS[0m
+     test05 - [93mPASS[0m
+     test06 - [93mPASS[0m
+     test07 - [93mPASS[0m
+     test08 - [93mPASS[0m
+     test09 - [93mPASS[0m
+     test10 - [93mPASS[0m
+     test11 - [93mPASS[0m
+     test12 - [93mPASS[0m
+[92m    - marks =[0m [1m[92m100[0m[0m
+
+----------- Autochecking Complete  ------------
+
+TOTAL SUBMISSIONS:    2
+
+COMPILE FAILED:       0 (  0 % )
+TIMED OUT:            0 (  0 % )
+INVALID OUTPUT:       0 (  0 % )
+
+EVALUATED:            2 ( 100 % )
+
+Executed in 1.1180 seconds
+
+----------- End of Results -----------------
+

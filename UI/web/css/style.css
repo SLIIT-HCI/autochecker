@@ -1,0 +1,19 @@
+/* #0099e5 #ff4c4c #34bf49 */
+
+body{
+    background: #fff;
+}
+
+.bg-tt-dark{
+  background: #0099e5;
+
+}
+.bg-tt-light{
+  background: #ff4c4c;
+
+}
+.bg-tt{
+  background: #34bf49;
+
+}
+

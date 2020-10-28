@@ -43,6 +43,8 @@ else:
     comp = 'compile.out'
 outputPath = os.getcwd()+"\\solutions\\"+output
 
+outputList=[]
+
 
 
 class bcolors:
@@ -130,14 +132,15 @@ def prep_tests(tt):
     else:
         print 'Runtime tests not loaded for --no-run'
 
-def compare(test, expected, result):
+def compare(test, expected, result):    
     matchlist = re.findall('\d+\.\d{2}', result)
     stest = lenformat(test)
-    global summary, all_invalid
+    global summary, all_invalid, outputList
 
     if len(matchlist)==0:
         if not summary:
             print '    ', stest, '-', red('FAIL'), ': invalid output'
+            outputList.append('    '+ stest+ '-'+ red('FAIL')+ ': invalid output')
     else:
         all_invalid = False
         result = matchlist[-1]
@@ -147,12 +150,14 @@ def compare(test, expected, result):
             cpass += 1
             if not summary:
                 print '    ', stest, '-', orange('PASS')
+                outputList.append('    '+ stest+ '-'+'PASS ORANGE')
         else:
             if not summary:
                 print '    ', stest, '-', red('FAIL'), ': expected {0} returned {1}'.format(expected, result)
+                outputList.append('    '+ stest+ '-'+'FAIL RED'+': expected {0} returned {1}'.format(expected, result))
 
 def run_file(filepath, studentid):
-    global cpass, npass, tpass, timeout, timed_out, all_timeout
+    global cpass, npass, tpass, timeout, timed_out, all_timeout, outputList
     cpass = 0
     for key in test_in.keys():
         timed_out = False
@@ -174,6 +179,7 @@ def run_file(filepath, studentid):
         if timed_out:
             if not summary:
                 print '    ', lenformat(key), '-', red('FAIL'), ': timed out'
+                outputList.append('    '+ lenformat(key), '-'+ red('FAIL')+': timed out')
         else:
             all_timeout = False
             compare(key, test_out[key], result)
@@ -182,6 +188,8 @@ def run_file(filepath, studentid):
         npass += 1
 
 def compile_file(filepath, studentid):
+    global outputList
+    outputList.append('Compilation')
     f = open(comp, 'w')
     r = call(['gcc', filepath], stdout=f, stderr=f)
     f.close()
@@ -195,8 +203,10 @@ def compile_file(filepath, studentid):
 
         if not summary:
             print '    ', green('Compile OK')
+            outputList.append('Compile OK GREEN')
         elif not run:
             print orange('Compile OK')
+            outputList.append('Compile OK ORANGE')
 
         if run:
             all_timeout = True
@@ -212,31 +222,43 @@ def compile_file(filepath, studentid):
         if not summary:
             print '    ',
         print red('Compile FAIL')
+        outputList.append('Compile FAIL RED')
 
 def process_file(filepath):
-    global marks, summary, run
+    global marks, summary, run, outputList
     marks = 0
     a = filepath.split('/')
     studentid = a[len(a)-2]
+    outputList.append("FileName")
 
     if summary:
-        print studentid,
+        print studentid
+        outputList.append(studentid)
     else:
         print studentid
+        outputList.append(studentid)
 
     compile_file(filepath, studentid)
 
     if summary:
         if run and marks!=0:
             if all_timeout:
+                outputList.append("all_timeout")
                 print orange('Compile OK - all tests timed out')
+                outputList.append("Compile OK - all tests timed out")
             elif all_invalid:
+                outputList.append("all_invalid")
                 print orange('Compile OK - all outputs in unexpected format')
+                outputList.append("Compile OK - all outputs in unexpected format")
             else:
+                outputList.append("all_ok")
                 print green('Compile OK - marks ='), bold(green(str(marks)))
+                outputList.append('Compile OK - marks ='+str(marks))
     else:
         if marks!=0:
+            outputList.append("TotalMarks")
             print green('    - marks ='), bold(green(str(marks)))
+            outputList.append("    - marks ="+str(marks))
 
 def process(cur):
     global ext, count
@@ -308,48 +330,64 @@ def p(c):
     return c * 100 / count
 
 def print_results():
+    global outputList
     print '\n----------- Autochecking Complete  ------------\n'
+    outputList.append("SummaryStarted")
     print 'TOTAL SUBMISSIONS: {0:>4}'.format(count)
+    outputList.append('TOTAL SUBMISSIONS: {0:>4}'.format(count))
     print ''
     print 'COMPILE FAILED:    {0:>4} ( {1:>2.0f} % )'.format(cfail, p(cfail))
+    outputList.append('COMPILE FAILED:    {0:>4} ( {1:>2.0f} % )'.format(cfail, p(cfail)))
 
     global run, cinvalid, ctimeout, starttime
     if run:
         ceval = csuccess - ctimeout - cinvalid
         print 'TIMED OUT:         {0:>4} ( {1:>2.0f} % )'.format(ctimeout, p(ctimeout))
+        outputList.append('TIMED OUT:         {0:>4} ( {1:>2.0f} % )'.format(ctimeout, p(ctimeout)))
         print 'INVALID OUTPUT:    {0:>4} ( {1:>2.0f} % )'.format(cinvalid, p(cinvalid))
+        outputList.append('INVALID OUTPUT:    {0:>4} ( {1:>2.0f} % )'.format(cinvalid, p(cinvalid)))
+        
         print ''
         print 'EVALUATED:         {0:>4} ( {1:>2.0f} % )'.format(ceval, p(ceval))
+        outputList.append('EVALUATED:         {0:>4} ( {1:>2.0f} % )'.format(ceval, p(ceval)))
     else:
         print 'COMPILE SUCESSFUL: {0:>4} ( {1:>2.0f} % )'.format(csuccess, p(csuccess))
+        outputList.append('COMPILE SUCESSFUL: {0:>4} ( {1:>2.0f} % )'.format(csuccess, p(csuccess)))
 
     print '\nExecuted in {0:.4f} seconds'.format(time() - starttime)
+    outputList.append('Executed in {0:.4f} seconds'.format(time() - starttime))
 
 def print_endof_results():
     print '\n----------- End of Results -----------------\n'
 
 def returnAll():
-    return (ctimeout, cinvalid, csuccess, time() - starttime)
+    global outputList
+    return outputList
 
 def removeAll(path):
-    outputPath = os.getcwd()+"\\"+path+"\\"+output
-    os.remove(outputPath)
+    #outputPath = os.getcwd()+"\\"+path+"\\"+output
+    os.remove(path+"\\"+output)
 
-def main():
-    init()
-    parse_args()
-    print_loading_tests()
-    prep_tests(testdir)
-    print_start_message()
-    process(stdir)
-    print_results()
-    #print returnAll()
-    print_endof_results()
-    removeAll(stdir)
+def emptyLists():
+    global outputList
+    outputList = []
+    
+
+#def main():
+    # init()
+    # parse_args()
+    # print_loading_tests()
+    # prep_tests(testdir)
+    # print_start_message()
+    # process(stdir)
+    # print_results()
+    # #print returnAll()
+    # print_endof_results()
+    # removeAll(stdir)
     
 
 
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
